@@ -26,13 +26,6 @@ RUN echo $TZ | tee /etc/timezone \
 		  php \
 		  php-pear \
 		  smarty3 \
-      benno-lib \
-      benno-core \
-      benno-archive \
-      benno-rest-lib \
-      benno-rest \
-      benno-smtp \
-      benno-imap \
       php-sqlite3 \
       php-curl \
       smarty3 \
@@ -46,10 +39,20 @@ RUN echo $TZ | tee /etc/timezone \
       libdbd-mysql-perl \
       libcrypt-eksblowfish-perl \
       libdata-entropy-perl \
+      libterm-readkey-perl \
     # avoid "invoke-rc.d: policy-rc.d denied execution of start."
-    && echo "#!/bin/sh\nexit 0" > /usr/sbin/policy-rc.d \
+    && echo "#!/bin/sh\nexit 0" > /usr/sbin/policy-rc.d
     # fix reload apache error while configuring benno-web (because apache isn't running at that time)
-    && cd /tmp && apt-get download benno-web \
+RUN apt-get -y install \
+      benno-lib \
+      benno-core \
+      benno-archive \
+      benno-rest-lib \
+      benno-rest \
+      benno-smtp \
+      benno-imap \
+      benno-milter
+RUN cd /tmp && apt-get download benno-web \
     && dpkg --unpack benno-web_*.deb \
     && sed -i '/invoke-rc.d apache2 force-reload/d' /var/lib/dpkg/info/benno-web.postinst \
     && dpkg --configure benno-web \
